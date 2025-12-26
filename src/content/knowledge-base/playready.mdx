@@ -1,0 +1,320 @@
+---
+title: "PlayReady DRM"
+description: "Microsoft's enterprise DRM solution for Windows, Xbox, and smart devices - architecture, licensing, and implementation."
+category: "drm-systems"
+difficulty: "intermediate"
+estimatedReadTime: 20
+order: 4
+tags: ["playready", "microsoft", "windows", "xbox", "silverlight"]
+relatedArticles: ["overview", "widevine", "fairplay", "encryption"]
+---
+
+# PlayReady DRM
+
+PlayReady is Microsoft's DRM technology, evolved from Windows Media DRM. It's the dominant DRM on Windows devices and is widely licensed to smart TV manufacturers, set-top box vendors, and other device makers.
+
+## Platform Coverage
+
+PlayReady is available across diverse platforms:
+
+| Platform | Implementation |
+|----------|---------------|
+| Windows 10/11 | Native OS support |
+| Xbox | Hardware-secured |
+| Edge Browser | Native integration |
+| Smart TVs | Licensed SDK |
+| Set-top Boxes | Licensed SDK |
+| Blu-ray | AACS integration |
+
+<InfoBox title="Licensing Model">
+Unlike Widevine (free to use) or FairPlay (Apple-only), PlayReady requires commercial licensing from Microsoft. This makes it common in commercial devices but less prevalent in web browsers.
+</InfoBox>
+
+## Architecture
+
+PlayReady uses a client-server architecture with flexible deployment options:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   PlayReady Architecture                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐                    ┌──────────────┐           │
+│  │  PlayReady   │◄──────────────────►│   License    │           │
+│  │    Client    │   License Request  │   Server     │           │
+│  │              │◄──────────────────►│              │           │
+│  └──────────────┘   License Response └──────────────┘           │
+│         │                                   │                    │
+│         ▼                                   ▼                    │
+│  ┌──────────────┐                    ┌──────────────┐           │
+│  │  Secure      │                    │   Content    │           │
+│  │  Clock       │                    │   Provider   │           │
+│  └──────────────┘                    └──────────────┘           │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Security Levels (SL)
+
+PlayReady defines security levels similar to Widevine:
+
+<SecurityLevel level="L1" description="SL3000: Hardware-based TEE protection. Highest security for premium content." />
+
+<SecurityLevel level="L2" description="SL2000: Hardware key protection with software decryption. Mid-tier security." />
+
+<SecurityLevel level="L3" description="SL150: Software-only implementation. Lowest security level." />
+
+<KeyConcept term="SL3000">
+Security Level 3000 requires a hardware Trusted Execution Environment where keys are never exposed to the main CPU. Windows Hello-capable PCs typically support SL3000.
+</KeyConcept>
+
+## License Structure
+
+PlayReady licenses are XML-based documents containing:
+
+```xml
+<WRMHEADER xmlns="http://schemas.microsoft.com/DRM/2007/03/PlayReadyHeader">
+  <DATA>
+    <PROTECTINFO>
+      <KIDS>
+        <KID ALGID="AESCTR" VALUE="base64-key-id"/>
+      </KIDS>
+    </PROTECTINFO>
+    <LA_URL>https://license.server.com/acquire</LA_URL>
+    <LUI_URL>https://ui.server.com/register</LUI_URL>
+  </DATA>
+</WRMHEADER>
+```
+
+### License Types
+
+| Type | Description | Use Case |
+|------|-------------|----------|
+| Simple | Single content key | Basic streaming |
+| Leaf | Bound to root license | Subscription models |
+| Root | Contains key encryption key | License chaining |
+| Persistent | Stored on device | Offline playback |
+
+## License Acquisition
+
+### SOAP Protocol
+
+PlayReady traditionally uses SOAP for license requests:
+
+```xml
+<soap:Envelope>
+  <soap:Body>
+    <AcquireLicense>
+      <challenge>
+        <Challenge encoding="base64encoded">...</Challenge>
+      </challenge>
+    </AcquireLicense>
+  </soap:Body>
+</soap:Envelope>
+```
+
+### RESTful API (Modern)
+
+Newer implementations use REST:
+
+```
+POST /playready/license HTTP/1.1
+Content-Type: text/xml
+
+<PlayReadyLicenseRequest>
+  <Challenge>base64-encoded-challenge</Challenge>
+  <ContentHeader>WRM header</ContentHeader>
+</PlayReadyLicenseRequest>
+```
+
+<InfoBox title="Challenge Format">
+The license challenge contains device certificate, content header, and client capabilities encrypted with the server's public key.
+</InfoBox>
+
+## Secure Clock
+
+PlayReady uses a secure clock for license enforcement:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Secure Clock Flow                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. Device requests secure time from Microsoft                   │
+│                                                                  │
+│  2. Microsoft signs current time with trusted certificate        │
+│                                                                  │
+│  3. Device stores signed time in secure storage                  │
+│                                                                  │
+│  4. License expiration checked against secure clock              │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+<BlueTeamNote>
+The secure clock prevents users from extending license validity by manipulating their system clock. Time-based licenses require periodic clock synchronization.
+</BlueTeamNote>
+
+## Output Protections
+
+PlayReady supports comprehensive output controls:
+
+### Output Protection Levels (OPL)
+
+```
+┌─────────────────────────────────────────┐
+│          Output Protection Levels       │
+├─────────────────────────────────────────┤
+│                                         │
+│  OPL 100: No restrictions               │
+│           └── Analog OK, Digital OK     │
+│                                         │
+│  OPL 150: Engage CGMS-A                 │
+│           └── Copy protection signal    │
+│                                         │
+│  OPL 200: HDCP 1.x required             │
+│           └── Digital outputs only      │
+│                                         │
+│  OPL 250: HDCP 2.0 required             │
+│           └── Enhanced protection       │
+│                                         │
+│  OPL 300: HDCP 2.2 + Hardware           │
+│           └── Maximum protection        │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+<KeyConcept term="OPL">
+Output Protection Levels define minimum requirements for content playback. Higher OPLs require stronger HDCP versions and may restrict analog outputs entirely.
+</KeyConcept>
+
+## Domain Management
+
+PlayReady supports device domains for family sharing:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Domain Structure                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│                    ┌─────────────┐                              │
+│                    │   Domain    │                              │
+│                    │   Server    │                              │
+│                    └──────┬──────┘                              │
+│                           │                                      │
+│            ┌──────────────┼──────────────┐                      │
+│            │              │              │                      │
+│     ┌──────▼─────┐ ┌──────▼─────┐ ┌──────▼─────┐               │
+│     │  Device 1  │ │  Device 2  │ │  Device 3  │               │
+│     │  (PC)      │ │  (Xbox)    │ │  (Tablet)  │               │
+│     └────────────┘ └────────────┘ └────────────┘               │
+│                                                                  │
+│     All devices share domain license                            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+<InfoBox title="Domain Limits">
+Domains typically limit the number of joined devices (e.g., 10 devices). Leaving and rejoining a domain may have cooldown periods.
+</InfoBox>
+
+## Windows Implementation
+
+### Protected Media Path (PMP)
+
+Windows implements a Protected Media Path for secure decryption:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│               Windows Protected Media Path                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                    User Mode                            │    │
+│  │  ┌─────────────┐                                        │    │
+│  │  │ Application │                                        │    │
+│  │  └──────┬──────┘                                        │    │
+│  │         │                                               │    │
+│  │  ┌──────▼──────┐    ┌──────────────┐                   │    │
+│  │  │Media Found. │───►│ PlayReady   │                    │    │
+│  │  │             │    │ Runtime     │                    │    │
+│  │  └─────────────┘    └──────────────┘                   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                           │                                      │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                   Kernel Mode                           │    │
+│  │  ┌─────────────────────────────────────────────────┐    │    │
+│  │  │              Protected Environment              │    │    │
+│  │  │  ┌─────────────┐    ┌─────────────┐            │    │    │
+│  │  │  │ Decryption  │───►│  Secure     │            │    │    │
+│  │  │  │             │    │  Output     │            │    │    │
+│  │  │  └─────────────┘    └─────────────┘            │    │    │
+│  │  └─────────────────────────────────────────────────┘    │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+<RedTeamNote>
+Older Windows versions had vulnerabilities in the Protected Media Path. Modern Windows 10/11 with TPM 2.0 provides significantly stronger protection.
+</RedTeamNote>
+
+## Edge Browser Integration
+
+Microsoft Edge supports PlayReady through EME:
+
+```javascript
+// Check for PlayReady support
+navigator.requestMediaKeySystemAccess('com.microsoft.playready', [{
+  initDataTypes: ['cenc'],
+  videoCapabilities: [{
+    contentType: 'video/mp4; codecs="avc1.42E01E"'
+  }]
+}]).then(access => {
+  // PlayReady is available
+}).catch(err => {
+  // Fallback to Widevine
+});
+```
+
+## Attack History
+
+PlayReady has faced various attacks over its lifetime:
+
+### Historical Vulnerabilities
+
+| Year | Attack | Impact |
+|------|--------|--------|
+| 2010 | HDCP Master Key Leak | Output protection weakened |
+| 2016 | SL150 Key Extraction | Software CDM compromised |
+| 2020 | TEE Vulnerabilities | Some SL3000 devices affected |
+
+<BlueTeamNote title="Mitigation">
+Microsoft regularly updates PlayReady robustness rules. Content providers can specify minimum client versions and revoke compromised devices through certificate revocation lists (CRLs).
+</BlueTeamNote>
+
+## Comparison with Widevine
+
+| Feature | PlayReady | Widevine |
+|---------|-----------|----------|
+| Licensing | Commercial | Free |
+| Protocol | SOAP/REST | Protobuf |
+| Platforms | Windows-centric | Android-centric |
+| Browser | Edge | Chrome |
+| Offline | Full support | Full support |
+| Domains | Native | Via app logic |
+
+## Summary
+
+- PlayReady is Microsoft's commercially licensed DRM
+- Supports three security levels (SL150, SL2000, SL3000)
+- Uses secure clock for time-based license enforcement
+- Comprehensive output protection through OPLs
+- Domain support for family/device sharing
+- Windows Protected Media Path for secure decryption
+
+## Next Steps
+
+- **[Encryption Basics](/knowledge-base/encryption)** - Understand AES-CTR
+- **[License Protocols](/knowledge-base/protocols)** - Compare license flows
+- **[Key Exchange Lab](/labs/key-exchange)** - Visualize license exchanges

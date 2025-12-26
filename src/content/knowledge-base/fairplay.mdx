@@ -1,0 +1,326 @@
+---
+title: "FairPlay Streaming"
+description: "Apple's proprietary DRM system for iOS, macOS, and Safari - architecture, HLS integration, and security model."
+category: "drm-systems"
+difficulty: "intermediate"
+estimatedReadTime: 20
+order: 3
+tags: ["fairplay", "apple", "ios", "safari", "hls"]
+relatedArticles: ["overview", "widevine", "playready", "encryption"]
+---
+
+# FairPlay Streaming (FPS)
+
+FairPlay Streaming is Apple's DRM technology, required for protecting premium content on all Apple platforms. Unlike Widevine and PlayReady, FairPlay is deeply integrated with Apple's HTTP Live Streaming (HLS) protocol.
+
+## Apple's Closed Ecosystem
+
+FairPlay operates exclusively within Apple's ecosystem:
+
+| Platform | Availability |
+|----------|-------------|
+| iOS / iPadOS | Native support |
+| macOS | Safari browser |
+| tvOS | Apple TV |
+| visionOS | Apple Vision Pro |
+
+<InfoBox title="No Cross-Platform">
+Unlike Widevine, FairPlay cannot be licensed for non-Apple platforms. This forces multi-DRM implementations for any service targeting both Apple and non-Apple devices.
+</InfoBox>
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                  FairPlay Architecture                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐       │
+│  │   AVPlayer   │    │     Key      │    │   Content    │       │
+│  │   + CDM      │◄──►│   Server     │◄──►│   Provider   │       │
+│  └──────────────┘    │   Module     │    │   Backend    │       │
+│         │            └──────────────┘    └──────────────┘       │
+│         ▼                                                        │
+│  ┌──────────────┐                                               │
+│  │   Secure    │                                                │
+│  │   Enclave   │  (Hardware key protection)                     │
+│  └──────────────┘                                               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Key Server Module (KSM)
+
+The Key Server Module is a server-side component that:
+
+- Processes Server Playback Context (SPC) requests
+- Decrypts and validates requests using FairPlay certificates
+- Returns Content Key Context (CKC) responses
+
+<KeyConcept term="SPC/CKC">
+**SPC** (Server Playback Context) is the encrypted license request from the client. **CKC** (Content Key Context) is the encrypted response containing the decryption key.
+</KeyConcept>
+
+## HLS Integration
+
+FairPlay is tightly coupled with HLS (HTTP Live Streaming):
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     HLS + FairPlay Flow                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. Master Playlist (m3u8)                                       │
+│     └── #EXT-X-SESSION-KEY:METHOD=SAMPLE-AES,                   │
+│         URI="skd://key-id",KEYFORMAT="com.apple.streamingkey"   │
+│                                                                  │
+│  2. Media Playlist                                               │
+│     └── #EXT-X-KEY:METHOD=SAMPLE-AES,URI="skd://key-id"         │
+│                                                                  │
+│  3. Encrypted .ts segments (SAMPLE-AES)                         │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### SAMPLE-AES Encryption
+
+FairPlay uses SAMPLE-AES (also called CBCS for fMP4):
+
+- Audio: Full frame encryption
+- Video: Only certain NAL units encrypted (I-frames, P-frames)
+- Different from Widevine's full-segment encryption
+
+<InfoBox title="skd:// Protocol">
+The `skd://` URI scheme in HLS playlists triggers FairPlay key requests. The content after `skd://` is passed to the Key Server Module as the asset ID.
+</InfoBox>
+
+## License Flow
+
+### 1. Initialization
+
+```swift
+// iOS/macOS implementation
+let asset = AVURLAsset(url: streamURL)
+asset.resourceLoader.setDelegate(self, queue: delegateQueue)
+```
+
+### 2. Key Request
+
+When the player encounters an `skd://` URI:
+
+```
+┌────────────┐         ┌────────────┐         ┌────────────┐
+│  AVPlayer  │         │  Your App  │         │ Key Server │
+└─────┬──────┘         └─────┬──────┘         └─────┬──────┘
+      │                      │                      │
+      │ 1. resourceLoader    │                      │
+      │    shouldWait ──────►│                      │
+      │                      │                      │
+      │                      │ 2. Create SPC        │
+      │                      │    (contentId,       │
+      │                      │     certificate,     │
+      │                      │     app context)     │
+      │                      │                      │
+      │                      │ 3. POST SPC ────────►│
+      │                      │                      │
+      │                      │ 4. CKC ◄─────────────│
+      │                      │                      │
+      │ 5. finishLoading     │                      │
+      │◄─────────────────────│                      │
+```
+
+### 3. SPC Creation
+
+```swift
+// Simplified SPC creation
+func resourceLoader(_ resourceLoader: AVAssetResourceLoader,
+                   shouldWaitForLoadingOfRequestedResource
+                   loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
+
+    guard let url = loadingRequest.request.url,
+          url.scheme == "skd" else { return false }
+
+    let contentId = url.host ?? ""
+
+    do {
+        let spc = try loadingRequest.streamingContentKeyRequestData(
+            forApp: fpsCertificate,
+            contentIdentifier: contentId.data(using: .utf8)!,
+            options: nil
+        )
+
+        // Send SPC to your key server
+        fetchCKC(spc: spc, contentId: contentId) { ckc in
+            loadingRequest.dataRequest?.respond(with: ckc)
+            loadingRequest.finishLoading()
+        }
+    } catch {
+        loadingRequest.finishLoading(with: error)
+    }
+
+    return true
+}
+```
+
+## FairPlay Certificates
+
+To implement FairPlay, content providers need:
+
+### 1. FPS Deployment Package
+
+Obtained from Apple after signing agreements:
+
+- Application Secret Key (ASK)
+- FairPlay Streaming Certificate
+
+### 2. Certificate Chain
+
+```
+┌─────────────────────────────────────────┐
+│         Apple Root CA                   │
+│              │                           │
+│              ▼                           │
+│    FairPlay Intermediate CA             │
+│              │                           │
+│              ▼                           │
+│     Your FPS Certificate                │
+│  (Contains your public key)             │
+└─────────────────────────────────────────┘
+```
+
+<WarningBox title="Certificate Security">
+FairPlay certificates and the ASK must be kept extremely secure. Compromise allows attackers to decrypt any content protected with that certificate.
+</WarningBox>
+
+## Security Model
+
+### Hardware Protection
+
+Apple devices use the Secure Enclave for:
+
+- Key storage
+- Cryptographic operations
+- Attestation
+
+```
+┌─────────────────────────────────────────┐
+│              Apple Device               │
+├─────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐    │
+│  │        Application              │    │
+│  │   (Cannot access keys)          │    │
+│  └─────────────────────────────────┘    │
+│                  │                      │
+│                  ▼                      │
+│  ┌─────────────────────────────────┐    │
+│  │         iOS/macOS               │    │
+│  │    (Key handling APIs)          │    │
+│  └─────────────────────────────────┘    │
+│                  │                      │
+│                  ▼                      │
+│  ┌─────────────────────────────────┐    │
+│  │       Secure Enclave            │    │
+│  │  (Hardware key protection)      │    │
+│  └─────────────────────────────────┘    │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+<BlueTeamNote>
+Apple's vertical integration provides strong security - the same company controls hardware, OS, and DRM. This makes FairPlay generally more resistant to attacks than software-only solutions.
+</BlueTeamNote>
+
+### Output Protection
+
+FairPlay enforces HDCP on external displays:
+
+| Output | Protection |
+|--------|------------|
+| Built-in display | Secure path |
+| HDMI (Apple TV) | HDCP 2.2 |
+| AirPlay | Encrypted stream |
+| Screen Recording | Blocked for DRM content |
+
+## Offline Playback
+
+FairPlay supports persistent licenses for offline viewing:
+
+```swift
+// Request persistent key
+let keyRequest = try contentKeySession.makeStreamingContentKeyRequest(
+    forApp: certificate,
+    contentIdentifier: contentId,
+    options: [
+        AVContentKeyRequestProtocolVersionsKey: [1]
+    ]
+)
+
+// After receiving CKC, persist it
+try contentKeySession.persistableContentKey(
+    fromKeyVendorResponse: ckc,
+    options: nil
+)
+```
+
+<InfoBox title="Rental Windows">
+Persistent licenses include rental policies - typically 30 days to start watching, 48 hours to finish once started.
+</InfoBox>
+
+## Attack Considerations
+
+### Limited Attack Surface
+
+FairPlay is harder to attack than Widevine L3 because:
+
+1. **No software CDM** - All key handling is in OS/hardware
+2. **Closed source** - Apple controls all implementations
+3. **Device binding** - Keys tied to Secure Enclave
+4. **Certificate pinning** - Built into the OS
+
+<RedTeamNote>
+Historical FairPlay attacks have focused on:
+- Jailbroken device exploitation
+- HDCP stripping on the output side
+- Proxy-based key interception before hardware processing
+</RedTeamNote>
+
+### Screen Recording Block
+
+iOS prevents screen recording of FairPlay-protected content:
+
+```swift
+// This returns black frames for DRM content
+let recorder = RPScreenRecorder.shared()
+// Recording shows blank video for protected streams
+```
+
+## Safari Implementation
+
+Safari on macOS uses a privileged helper process:
+
+```
+Safari
+├── WebKit (Content Process)
+│   └── EME JavaScript API
+└── com.apple.WebKit.GPU (FPS handling)
+    └── Secure key processing
+```
+
+<KeyConcept term="EME">
+Safari implements the W3C Encrypted Media Extensions standard, allowing JavaScript to trigger FairPlay key requests through `navigator.requestMediaKeySystemAccess()`.
+</KeyConcept>
+
+## Summary
+
+- FairPlay is Apple's exclusive DRM for iOS, macOS, tvOS, and visionOS
+- Tightly integrated with HLS using SAMPLE-AES encryption
+- SPC/CKC protocol for license exchange
+- Hardware protection via Secure Enclave
+- Generally more secure than software DRM due to vertical integration
+- Requires Apple partnership for deployment
+
+## Next Steps
+
+- **[PlayReady](/knowledge-base/playready)** - Compare with Microsoft's approach
+- **[Encryption Basics](/knowledge-base/encryption)** - Understand SAMPLE-AES
+- **[Multi-DRM Strategy](/knowledge-base/protocols)** - Implementing across platforms
