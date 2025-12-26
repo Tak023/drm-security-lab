@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/labs/layout,_N_T_/labs/attacks/layout,_N_T_/labs/attacks/hdcp-bypass/layout,_N_T_/labs/attacks/hdcp-bypass/page,_N_T_/labs/attacks/hdcp-bypass"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/labs/attacks/hdcp-bypass/__PAGE__",
+    "/labs/attacks/hdcp-bypass",
+    "/labs/attacks",
+    "/labs",
+    "/_index",
+    "/_head"
+  ]
+}

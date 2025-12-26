@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/knowledge-base/layout,_N_T_/knowledge-base/[slug]/layout,_N_T_/knowledge-base/[slug]/page,_N_T_/knowledge-base/fairplay"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/knowledge-base/$d$slug/__PAGE__",
+    "/knowledge-base/$d$slug",
+    "/knowledge-base",
+    "/_index",
+    "/_head"
+  ]
+}

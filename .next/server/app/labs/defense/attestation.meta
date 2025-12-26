@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/labs/layout,_N_T_/labs/defense/layout,_N_T_/labs/defense/attestation/layout,_N_T_/labs/defense/attestation/page,_N_T_/labs/defense/attestation"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/labs/defense/attestation/__PAGE__",
+    "/labs/defense/attestation",
+    "/labs/defense",
+    "/labs",
+    "/_index",
+    "/_head"
+  ]
+}

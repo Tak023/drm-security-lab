@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/labs/layout,_N_T_/labs/defense/layout,_N_T_/labs/defense/watermarking/layout,_N_T_/labs/defense/watermarking/page,_N_T_/labs/defense/watermarking"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/labs/defense/watermarking/__PAGE__",
+    "/labs/defense/watermarking",
+    "/labs/defense",
+    "/labs",
+    "/_index",
+    "/_head"
+  ]
+}

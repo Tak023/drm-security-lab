@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/labs/layout,_N_T_/labs/attacks/layout,_N_T_/labs/attacks/key-sharing/layout,_N_T_/labs/attacks/key-sharing/page,_N_T_/labs/attacks/key-sharing"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/labs/attacks/key-sharing/__PAGE__",
+    "/labs/attacks/key-sharing",
+    "/labs/attacks",
+    "/labs",
+    "/_index",
+    "/_head"
+  ]
+}

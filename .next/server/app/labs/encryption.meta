@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/labs/layout,_N_T_/labs/encryption/layout,_N_T_/labs/encryption/page,_N_T_/labs/encryption"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/labs/encryption/__PAGE__",
+    "/labs/encryption",
+    "/labs",
+    "/_index",
+    "/_head"
+  ]
+}

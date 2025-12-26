@@ -1,0 +1,175 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/challenges/[id]",
+      "regex": "^/challenges/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/challenges/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/knowledge-base/[slug]",
+      "regex": "^/knowledge\\-base/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/knowledge\\-base/(?<nxtPslug>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/challenges",
+      "regex": "^/challenges(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/challenges(?:/)?$"
+    },
+    {
+      "page": "/diagrams",
+      "regex": "^/diagrams(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/diagrams(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/knowledge-base",
+      "regex": "^/knowledge\\-base(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/knowledge\\-base(?:/)?$"
+    },
+    {
+      "page": "/labs",
+      "regex": "^/labs(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs(?:/)?$"
+    },
+    {
+      "page": "/labs/attacks/cdm-extraction",
+      "regex": "^/labs/attacks/cdm\\-extraction(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/attacks/cdm\\-extraction(?:/)?$"
+    },
+    {
+      "page": "/labs/attacks/hdcp-bypass",
+      "regex": "^/labs/attacks/hdcp\\-bypass(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/attacks/hdcp\\-bypass(?:/)?$"
+    },
+    {
+      "page": "/labs/attacks/key-sharing",
+      "regex": "^/labs/attacks/key\\-sharing(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/attacks/key\\-sharing(?:/)?$"
+    },
+    {
+      "page": "/labs/attacks/mitm",
+      "regex": "^/labs/attacks/mitm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/attacks/mitm(?:/)?$"
+    },
+    {
+      "page": "/labs/cdm-simulator",
+      "regex": "^/labs/cdm\\-simulator(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/cdm\\-simulator(?:/)?$"
+    },
+    {
+      "page": "/labs/defense/anomaly",
+      "regex": "^/labs/defense/anomaly(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/defense/anomaly(?:/)?$"
+    },
+    {
+      "page": "/labs/defense/attestation",
+      "regex": "^/labs/defense/attestation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/defense/attestation(?:/)?$"
+    },
+    {
+      "page": "/labs/defense/watermarking",
+      "regex": "^/labs/defense/watermarking(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/defense/watermarking(?:/)?$"
+    },
+    {
+      "page": "/labs/encryption",
+      "regex": "^/labs/encryption(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/encryption(?:/)?$"
+    },
+    {
+      "page": "/labs/key-exchange",
+      "regex": "^/labs/key\\-exchange(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/key\\-exchange(?:/)?$"
+    },
+    {
+      "page": "/labs/license-server",
+      "regex": "^/labs/license\\-server(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/labs/license\\-server(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

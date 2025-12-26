@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/labs/layout,_N_T_/labs/attacks/layout,_N_T_/labs/attacks/cdm-extraction/layout,_N_T_/labs/attacks/cdm-extraction/page,_N_T_/labs/attacks/cdm-extraction"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/labs/attacks/cdm-extraction/__PAGE__",
+    "/labs/attacks/cdm-extraction",
+    "/labs/attacks",
+    "/labs",
+    "/_index",
+    "/_head"
+  ]
+}

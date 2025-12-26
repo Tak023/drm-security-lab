@@ -1,0 +1,23 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/challenges/[id]/page": "/challenges/[id]",
+  "/challenges/page": "/challenges",
+  "/diagrams/page": "/diagrams",
+  "/favicon.ico/route": "/favicon.ico",
+  "/knowledge-base/[slug]/page": "/knowledge-base/[slug]",
+  "/knowledge-base/page": "/knowledge-base",
+  "/labs/attacks/cdm-extraction/page": "/labs/attacks/cdm-extraction",
+  "/labs/attacks/hdcp-bypass/page": "/labs/attacks/hdcp-bypass",
+  "/labs/attacks/key-sharing/page": "/labs/attacks/key-sharing",
+  "/labs/attacks/mitm/page": "/labs/attacks/mitm",
+  "/labs/cdm-simulator/page": "/labs/cdm-simulator",
+  "/labs/defense/anomaly/page": "/labs/defense/anomaly",
+  "/labs/defense/attestation/page": "/labs/defense/attestation",
+  "/labs/defense/watermarking/page": "/labs/defense/watermarking",
+  "/labs/encryption/page": "/labs/encryption",
+  "/labs/key-exchange/page": "/labs/key-exchange",
+  "/labs/license-server/page": "/labs/license-server",
+  "/labs/page": "/labs",
+  "/page": "/"
+}
