@@ -1,16 +1,12 @@
-var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/labs/page.js")
-R.c("server/chunks/ssr/[root-of-the-server]__80fa5f6a._.js")
-R.c("server/chunks/ssr/Projects_Git_drm-security-lab_a03c9afc._.js")
-R.c("server/chunks/ssr/Projects_Git_drm-security-lab_6999c1ad._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__b98d7ada._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__c207fb66._.js")
-R.c("server/chunks/ssr/c3067_next_dist_e13de301._.js")
-R.c("server/chunks/ssr/Projects_Git_drm-security-lab_src_app_942f3011._.js")
-R.c("server/chunks/ssr/c3067_next_dist_client_components_builtin_global-error_4845f066.js")
-R.c("server/chunks/ssr/[root-of-the-server]__1edcb9b6._.js")
-R.c("server/chunks/ssr/c3067_next_dist_client_components_9611b99e._.js")
-R.c("server/chunks/ssr/c3067_next_dist_client_components_builtin_forbidden_50fed97e.js")
-R.c("server/chunks/ssr/c3067_next_dist_client_components_builtin_unauthorized_8307f1c5.js")
-R.c("server/chunks/ssr/7e210_Git_drm-security-lab__next-internal_server_app_labs_page_actions_82e32abf.js")
-R.m(23328)
-module.exports=R.m(23328).exports
+const CHUNK_PUBLIC_PATH = "server/app/labs/page.js";
+const runtime = require("../../chunks/ssr/[turbopack]_runtime.js");
+runtime.loadChunk("server/chunks/ssr/node_modules_next_dist_7c458f._.js");
+runtime.loadChunk("server/chunks/ssr/[root of the server]__550d4a._.js");
+runtime.loadChunk("server/chunks/ssr/[root of the server]__a400a9._.js");
+runtime.loadChunk("server/chunks/ssr/[root of the server]__8ebb6d._.css");
+runtime.loadChunk("server/chunks/ssr/node_modules_ce97a5._.js");
+runtime.loadChunk("server/chunks/ssr/node_modules_next_dist_client_components_forbidden-error_b4e556.js");
+runtime.loadChunk("server/chunks/ssr/node_modules_next_dist_client_components_unauthorized-error_d758e6.js");
+runtime.loadChunk("server/chunks/ssr/_bb2290._.js");
+runtime.getOrInstantiateRuntimeModule("[project]/.next-internal/server/app/labs/page/actions.js [app-rsc] (ecmascript)", CHUNK_PUBLIC_PATH);
+module.exports = runtime.getOrInstantiateRuntimeModule("[project]/node_modules/next/dist/esm/build/templates/app-page.js?page=/labs/page { MODULE_0 => \"[project]/src/app/layout.tsx [app-rsc] (ecmascript, Next.js server component)\", MODULE_1 => \"[project]/node_modules/next/dist/client/components/not-found-error.js [app-rsc] (ecmascript, Next.js server component)\", MODULE_2 => \"[project]/node_modules/next/dist/client/components/forbidden-error.js [app-rsc] (ecmascript, Next.js server component)\", MODULE_3 => \"[project]/node_modules/next/dist/client/components/unauthorized-error.js [app-rsc] (ecmascript, Next.js server component)\", MODULE_4 => \"[project]/src/app/labs/page.tsx [app-rsc] (ecmascript, Next.js server component)\" } [app-rsc] (ecmascript)", CHUNK_PUBLIC_PATH).exports;

@@ -1,14 +1,9 @@
-var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/_not-found/page.js")
-R.c("server/chunks/ssr/[root-of-the-server]__cc34e96c._.js")
-R.c("server/chunks/ssr/Projects_Git_drm-security-lab_a03c9afc._.js")
-R.c("server/chunks/ssr/c3067_next_dist_esm_build_templates_app-page_d2eef3b1.js")
-R.c("server/chunks/ssr/[root-of-the-server]__7276d02a._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__c207fb66._.js")
-R.c("server/chunks/ssr/c3067_next_dist_e13de301._.js")
-R.c("server/chunks/ssr/Projects_Git_drm-security-lab_src_app_942f3011._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__1edcb9b6._.js")
-R.c("server/chunks/ssr/c3067_next_dist_client_components_9611b99e._.js")
-R.c("server/chunks/ssr/c3067_next_dist_client_components_builtin_forbidden_50fed97e.js")
-R.c("server/chunks/ssr/7e210_Git_drm-security-lab__next-internal_server_app__not-found_page_actions_f449e13f.js")
-R.m(56072)
-module.exports=R.m(56072).exports
+const CHUNK_PUBLIC_PATH = "server/app/_not-found/page.js";
+const runtime = require("../../chunks/ssr/[turbopack]_runtime.js");
+runtime.loadChunk("server/chunks/ssr/node_modules_next_dist_7c458f._.js");
+runtime.loadChunk("server/chunks/ssr/[root of the server]__550d4a._.js");
+runtime.loadChunk("server/chunks/ssr/[root of the server]__a400a9._.js");
+runtime.loadChunk("server/chunks/ssr/[root of the server]__8ebb6d._.css");
+runtime.loadChunk("server/chunks/ssr/_62c64f._.js");
+runtime.getOrInstantiateRuntimeModule("[project]/.next-internal/server/app/_not-found/page/actions.js [app-rsc] (ecmascript)", CHUNK_PUBLIC_PATH);
+module.exports = runtime.getOrInstantiateRuntimeModule("[project]/node_modules/next/dist/esm/build/templates/app-page.js?page=/_not-found/page { MODULE_0 => \"[project]/src/app/layout.tsx [app-rsc] (ecmascript, Next.js server component)\", MODULE_1 => \"[project]/node_modules/next/dist/client/components/not-found-error.js [app-rsc] (ecmascript, Next.js server component)\" } [app-rsc] (ecmascript)", CHUNK_PUBLIC_PATH).exports;
